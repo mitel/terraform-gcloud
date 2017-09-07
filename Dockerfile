@@ -1,6 +1,5 @@
-FROM golang:alpine
+FROM hashicorp/terraform
 
-ENV TERRAFORM_VERSION 0.10.4
 ENV CLOUD_SDK_VERSION 170.0.0
 
 ENV PATH /google-cloud-sdk/bin:$PATH
@@ -20,16 +19,3 @@ RUN apk --no-cache add \
     gcloud config set component_manager/disable_update_check true && \
     gcloud config set metrics/environment github_docker_image
 VOLUME ["/root/.config"]
-
-RUN apk add --update git bash openssh
-
-ENV TF_DEV=true
-ENV TF_RELEASE=true
-
-WORKDIR $GOPATH/src/github.com/hashicorp/terraform
-RUN git clone https://github.com/hashicorp/terraform.git ./ && \
-    git checkout v${TERRAFORM_VERSION} && \
-    /bin/bash scripts/build.sh
-
-WORKDIR $GOPATH
-ENTRYPOINT ["terraform"]
